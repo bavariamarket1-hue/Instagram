@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CRITICAL ERROR</title>
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: black;
+        color: #FF3C3C;
+        font-family: Consolas, monospace;
+        font-size: 16px;
+    }
+
+    #matrix {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        opacity: 0.18;
+        background: black;
+    }
+
+    #output {
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 20px;
+        width: 100%;
+        height: 100%;
+        white-space: pre-wrap;
+        overflow-y: auto;
+        z-index: 2;
+        color: #ff1a1a;
+        text-shadow: 0 0 6px red;
+    }
+
+    #bsod {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0000AA;
+        color: white;
+        font-family: Consolas, monospace;
+        padding: 40px;
+        white-space: pre-wrap;
+        z-index: 9999;
+        font-size: 20px;
+    }
+
+    .blink {
+        animation: blink 0.35s infinite;
+    }
+
+    @keyframes blink {
+        0% {opacity: 1;}
+        50% {opacity: 0.2;}
+        100% {opacity: 1;}
+    }
+</style>
+
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div id="output"></div>
+
+<div id="bsod">
+A problem has been detected and Windows has been shut down to prevent damage  
+to your computer.
+
+The problem seems to be caused by the following file: FAKE_VIRUS.SYS
+
+CRITICAL_PROCESS_DIED
+
+If this is the first time you've seen this Stop error screen,  
+restart your computer. If this screen appears again, follow  
+these steps:
+
+Check to make sure any new hardware or software is properly installed.  
+If this is a new installation, ask your hardware or software manufacturer  
+for any Windows updates you might need.
+
+Technical information:
+
+*** STOP: 0x000000EF (0xFFFFE00000000000, 0x0000000000000000)
+***    YOUR PC IS INFECTED (FAKE)
+***    NOTHING IS ACTUALLY HARMED
+
+-----------------------------------------
+             ЭТО БЫЛ ПРАНК :)
+-----------------------------------------
+</div>
+
+<audio id="alertSound">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+</audio>
+
+<script>
+// ------------------------------
+// ФОН "МАТРИЦА"
+// ------------------------------
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#00FF00";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const char = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.95) {
+            drops[i] = 0;
+        }
+        drops[i]++;
+    }
+}
+setInterval(drawMatrix, 45);
+
+
+// ------------------------------
+// ВЫВОД ТЕКСТА
+// ------------------------------
+
+const output = document.getElementById("output");
+const alertSound = document.getElementById("alertSound");
+
+function printLine(text, delay) {
+    setTimeout(() => {
+        output.innerHTML += text + "\n";
+        output.scrollTop = output.scrollHeight;
+    }, delay);
+}
+
+alertSound.volume = 0.3;
+alertSound.play();
+
+let delay = 500;
+
+const lines = [
+    "========== КРИТИЧЕСКАЯ ОШИБКА СИСТЕМЫ ==========",
+    "[BOOT] Инициализация аварийного модуля...",
+    "[СКАНИРОВАНИЕ] Проверка критических процессов...",
+    "[ОБНАРУЖЕНО] НЕИЗВЕСТНЫЙ МОДУЛЬ: virus_core.dll",
+    "[АЛЕРТ] Подозрительная активность в системной памяти!",
+    "[СКАНИРОВАНИЕ] Анализ сетевых соединений...",
+    "[ОПАСНО] Обнаружена попытка внешнего подключения.",
+    "[СКАНИРОВАНИЕ] Проверка файлов на вредоносный код...",
+    "[ВИРУС ОБНАРУЖЕН] threat.exe — ПОВРЕЖДЁННЫЙ ФАЙЛ!",
+    "[СТАТУС] Угроза классифицирована как: ОЧЕНЬ ОПАСНАЯ",
+    "[АЛЕРТ] Попытка блокировки вируса...",
+    "[ОШИБКА] Блокировка не удалась!",
+    "[СИСТЕМА] РЕГИСТР ЗАРАЖЁН!",
+    "[КРИТИЧЕСКАЯ ОШИБКА] НАЧАТО РАСПРОСТРАНЕНИЕ...",
+    "[ОТКЛЮЧЕНИЕ] СИСТЕМА БУДЕТ ПЕРЕЗАГРУЖЕНА ЧЕРЕЗ 5...",
+    "[СТАТУС] 4...",
+    "[СТАТУС] 3...",
+    "[СТАТУС] 2...",
+    "[СТАТУС] 1...",
+    "[!!!] НЕИСПРАВИМОЕ ПОВРЕЖДЕНИЕ — ОТКЛЮЧЕНИЕ..."
+];
+
+// Вывод текста
+lines.forEach(line => {
+    printLine(line, delay);
+    delay += 700;
+});
+
+// ------------------------------
+// ПОКАЗ BSOD
+// ------------------------------
+setTimeout(() => {
+    document.getElementById("bsod").style.display = "block";
+}, delay + 1000);
+</script>
+
+</body>
+</html>
